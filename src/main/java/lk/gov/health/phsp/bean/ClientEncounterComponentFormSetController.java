@@ -263,6 +263,7 @@ public class ClientEncounterComponentFormSetController implements Serializable {
         return toViewFormset();
     }
 
+    
     public void executreCompleteEvents(DataFormset tSet) {
         if (tSet.getForms() == null) {
             return;
@@ -338,6 +339,23 @@ public class ClientEncounterComponentFormSetController implements Serializable {
         JsfUtil.addSuccessMessage("Reversed Completion");
         userTransactionController.recordTransaction("Formset Complete Reversal");
         return toViewFormset();
+    }
+    
+    public String retireFormset() {
+        if (selected == null) {
+            JsfUtil.addErrorMessage("Nothing to Complete.");
+            userTransactionController.recordTransaction("Nothing to Complete in formset");
+            return "";
+        }
+        save(selected);
+        selected.setRetired(true);
+        selected.setRetiredAt(new Date());
+        selected.setRetiredBy(webUserController.getLoggedUser());
+        getFacade().edit(selected);
+        formEditable = false;
+        JsfUtil.addSuccessMessage("Formset Retired");
+        userTransactionController.recordTransaction("Formset Retired");
+        return toClientProfileFromEncounter();
     }
 
     public void executePostCompletionStrategies(ClientEncounterComponentFormSet s) {
